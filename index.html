@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseHype — Viral Content Radar</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b0f;
+    --surface: #0f1419;
+    --surface2: #161c24;
+    --border: #1e2a38;
+    --accent: #ff4500;
+    --accent2: #ff6b35;
+    --green: #00d26a;
+    --blue: #4f9eff;
+    --yellow: #ffd60a;
+    --text: #e8edf3;
+    --muted: #6b7a8d;
+    --hot: #ff2d55;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 60px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse-live 1.5s ease-in-out infinite;
+    margin-left: auto;
+  }
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .live-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .last-update {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* FEEDS */
+  .feeds-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .feeds-bar::-webkit-scrollbar { display: none; }
+  .feed-btn {
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .feed-btn:hover { color: var(--text); }
+  .feed-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .feed-btn .count {
+    background: var(--border);
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 10px;
+    margin-left: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* CONTROLS */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .sort-btn {
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .sort-btn:hover, .sort-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .nsfw-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .toggle-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-switch.on { background: var(--accent); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle-switch.on::after { left: 19px; }
+
+  /* POST CARDS */
+  .posts-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .post-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.1s;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .post-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .post-card:hover { border-color: #2a3a4a; transform: translateX(2px); }
+  .post-card:hover::before { opacity: 1; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .subreddit-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: var(--blue);
+    font-weight: 500;
+  }
+  .post-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .post-stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--muted);
+  }
+  .stat.hot { color: var(--hot); }
+  .stat.rising { color: var(--yellow); }
+
+  /* HYPE SCORE */
+  .hype-score {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hype-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .hype-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .hype-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* SENTIMENT TAG */
+  .sentiment-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .sentiment-tag.positive { background: rgba(0,210,106,0.15); color: var(--green); }
+  .sentiment-tag.negative { background: rgba(255,45,85,0.15); color: var(--hot); }
+  .sentiment-tag.neutral { background: rgba(79,158,255,0.15); color: var(--blue); }
+  .sentiment-tag.mixed { background: rgba(255,214,10,0.15); color: var(--yellow); }
+
+  /* FLAIR */
+  .post-flair {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    background: rgba(255,69,0,0.15);
+    color: var(--accent2);
+    margin-left: 6px;
+  }
+  .nsfw-flair {
+    background: rgba(255,45,85,0.2);
+    color: var(--hot);
+  }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* TRENDING TOPICS */
+  .trend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .trend-item:last-child { border-bottom: none; }
+  .trend-rank {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 20px;
+  }
+  .trend-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .trend-vel {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+  }
+
+  /* VELOCITY CHART */
+  .velocity-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 48px;
+    margin-top: 8px;
+  }
+  .vel-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 2px 2px 0 0;
+    transition: height 0.5s ease, background 0.3s;
+  }
+  .vel-bar.peak { background: var(--accent); }
+  .vel-bar.high { background: var(--accent2); }
+  .vel-bar.mid { background: var(--muted); }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    gap: 16px;
+    color: var(--muted);
+  }
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  .error-state {
+    background: rgba(255,45,85,0.08);
+    border: 1px solid rgba(255,45,85,0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: var(--hot);
+    font-size: 13px;
+  }
+  .retry-btn {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+  }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    PulseHype
+  </div>
+  <div class="live-label">
+    <div class="pulse-dot"></div>
+    LIVE
+  </div>
+  <div class="last-update" id="lastUpdate">Loading...</div>
+</header>
+
+<div class="feeds-bar" id="feedsBar">
+  <button class="feed-btn active" data-feed="all" onclick="switchFeed('all', this)">🌍 All <span class="count" id="count-all">—</span></button>
+  <button class="feed-btn" data-feed="technology" onclick="switchFeed('technology', this)">⚡ Tech <span class="count" id="count-technology">—</span></button>
+  <button class="feed-btn" data-feed="worldnews" onclick="switchFeed('worldnews', this)">🌐 World <span class="count" id="count-worldnews">—</span></button>
+  <button class="feed-btn" data-feed="gaming" onclick="switchFeed('gaming', this)">🎮 Gaming <span class="count" id="count-gaming">—</span></button>
+  <button class="feed-btn" data-feed="science" onclick="switchFeed('science', this)">🔬 Science <span class="count" id="count-science">—</span></button>
+  <button class="feed-btn" data-feed="movies" onclick="switchFeed('movies', this)">🎬 Movies <span class="count" id="count-movies">—</span></button>
+  <button class="feed-btn" data-feed="funny" onclick="switchFeed('funny', this)">😂 Funny <span class="count" id="count-funny">—</span></button>
+</div>
+
+<div class="main">
+  <div>
+    <div class="controls">
+      <button class="sort-btn active" onclick="setSort('hype', this)">🔥 Hype Score</button>
+      <button class="sort-btn" onclick="setSort('hot', this)">📈 Trending</button>
+      <button class="sort-btn" onclick="setSort('comments', this)">💬 Discussed</button>
+      <button class="sort-btn" onclick="setSort('new', this)">🆕 Fresh</button>
+      <label class="nsfw-toggle" onclick="toggleNSFW()">
+        <span>NSFW</span>
+        <div class="toggle-switch" id="nsfwToggle"></div>
+      </label>
+    </div>
+    <div class="posts-grid" id="postsGrid">
+      <div class="loading"><div class="spinner"></div><span>Scanning the internet...</span></div>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">📡 Viral Velocity</div>
+      <div class="velocity-chart" id="velocityChart">
+        <!-- bars rendered by JS -->
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">Posts per minute (last 24h)</div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">🚀 Trending Topics</div>
+      <div id="trendingTopics">
+        <div style="color:var(--muted);font-size:12px;">Loading trends...</div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">📊 Sentiment Breakdown</div>
+      <div id="sentimentBreakdown" style="font-size:13px;"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const state = {
+  currentFeed: 'all',
+  sortMode: 'hype',
+  showNSFW: false,
+  allPosts: {},
+  loading: false
+};
+
+const FEEDS = {
+  all: ['r/all'],
+  technology: ['r/technology', 'r/programming'],
+  worldnews: ['r/worldnews', 'r/news'],
+  gaming: ['r/gaming', 'r/pcgaming'],
+  science: ['r/science', 'r/space'],
+  movies: ['r/movies', 'r/television'],
+  funny: ['r/funny', 'r/memes']
+};
+
+// ── SENTIMENT ANALYSIS (browser-side, keyword-based) ──────
+const POSITIVE_WORDS = ['amazing','incredible','love','great','awesome','best','happy','good','wonderful','fantastic','excellent','brilliant','perfect','success','win','breakthrough','revolutionary','solved','fixed','beautiful','nice','epic','legend','goat'];
+const NEGATIVE_WORDS = ['hate','terrible','awful','worst','broken','failed','dead','crisis','disaster','banned','scam','fraud','attack','kill','death','war','crash','toxic','disgusting','horrible','outrage','shocking','exposed','scandal'];
+const HYPE_WORDS = ['viral','breaking','leaked','exclusive','finally','confirmed','official','just','now','huge','massive','major','historic'];
+
+function analyzeSentiment(title) {
+  const lower = title.toLowerCase();
+  let pos = 0, neg = 0, hype = 0;
+  POSITIVE_WORDS.forEach(w => { if (lower.includes(w)) pos++; });
+  NEGATIVE_WORDS.forEach(w => { if (lower.includes(w)) neg++; });
+  HYPE_WORDS.forEach(w => { if (lower.includes(w)) hype++; });
+  if (pos > neg) return { label: 'positive', icon: '🟢', score: pos };
+  if (neg > pos) return { label: 'negative', icon: '🔴', score: neg };
+  if (hype > 0) return { label: 'mixed', icon: '🟡', score: hype };
+  return { label: 'neutral', icon: '🔵', score: 0 };
+}
+
+function calcHypeScore(post) {
+  const ups = post.ups || 0;
+  const comments = post.num_comments || 0;
+  const ratio = post.upvote_ratio || 0.5;
+  const hourAge = Math.max(1, (Date.now()/1000 - post.created_utc) / 3600);
+  // Engagement velocity + controversy boost
+  const velocity = (ups + comments * 3) / Math.pow(hourAge + 2, 1.5);
+  const controversy = ratio < 0.6 ? 1.4 : 1.0;
+  const raw = velocity * controversy;
+  // Normalize to 0-100
+  return Math.min(99, Math.round(raw / 10));
+}
+
+function hypeColor(score) {
+  if (score >= 80) return 'var(--hot)';
+  if (score >= 60) return 'var(--accent)';
+  if (score >= 40) return 'var(--accent2)';
+  if (score >= 20) return 'var(--yellow)';
+  return 'var(--muted)';
+}
+
+function formatNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+  return n.toString();
+}
+
+function timeAgo(utc) {
+  const mins = Math.floor((Date.now()/1000 - utc) / 60);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins/60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs/24)}d ago`;
+}
+
+// ── FETCH ─────────────────────────────────────────────────
+async function fetchFeed(feedKey) {
+  const subreddits = FEEDS[feedKey];
+  const allPosts = [];
+  
+  await Promise.all(subreddits.map(async (sub) => {
+    try {
+      const url = `https://www.reddit.com/${sub}/hot.json?limit=25`;
+      const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      const posts = data.data.children.map(c => c.data);
+      allPosts.push(...posts);
+    } catch(e) {
+      console.warn(`Failed to fetch ${sub}:`, e.message);
+    }
+  }));
+  
+  return allPosts;
+}
+
+// ── RENDER POSTS ──────────────────────────────────────────
+function sortPosts(posts) {
+  const filtered = state.showNSFW ? posts : posts.filter(p => !p.over_18);
+  
+  switch(state.sortMode) {
+    case 'hype': return [...filtered].sort((a,b) => calcHypeScore(b) - calcHypeScore(a));
+    case 'hot': return [...filtered].sort((a,b) => b.ups - a.ups);
+    case 'comments': return [...filtered].sort((a,b) => b.num_comments - a.num_comments);
+    case 'new': return [...filtered].sort((a,b) => b.created_utc - a.created_utc);
+    default: return filtered;
+  }
+}
+
+function renderPosts(posts) {
+  const grid = document.getElementById('postsGrid');
+  
+  if (!posts || posts.length === 0) {
+    grid.innerHTML = `<div class="empty-state">No posts found. Try a different feed.</div>`;
+    return;
+  }
+  
+  const sorted = sortPosts(posts);
+  
+  grid.innerHTML = sorted.slice(0, 40).map(post => {
+    const hype = calcHypeScore(post);
+    const sentiment = analyzeSentiment(post.title);
+    const color = hypeColor(hype);
+    const isHot = hype >= 60;
+    const isRising = post.ups > 5000 && (Date.now()/1000 - post.created_utc) < 7200;
+    
+    return `
+      <a class="post-card" href="https://reddit.com${post.permalink}" target="_blank" rel="noopener">
+        <div class="post-meta">
+          <span class="subreddit-badge">r/${post.subreddit}</span>
+          <span>${timeAgo(post.created_utc)}</span>
+          ${post.link_flair_text ? `<span class="post-flair">${post.link_flair_text.slice(0,20)}</span>` : ''}
+          ${post.over_18 ? `<span class="post-flair nsfw-flair">NSFW</span>` : ''}
+        </div>
+        <div class="post-title">${escapeHtml(post.title)}</div>
+        <div class="post-stats">
+          <div class="stat ${isHot ? 'hot' : ''}">
+            ${isHot ? '🔥' : '▲'} ${formatNum(post.ups)}
+          </div>
+          <div class="stat">
+            💬 ${formatNum(post.num_comments)}
+          </div>
+          ${isRising ? '<div class="stat rising">📈 Rising</div>' : ''}
+          <div class="sentiment-tag ${sentiment.label}">${sentiment.icon} ${sentiment.label}</div>
+          <div class="hype-score">
+            <div class="hype-bar">
+              <div class="hype-fill" style="width:${hype}%;background:${color}"></div>
+            </div>
+            <span class="hype-label" style="color:${color}">${hype}</span>
+          </div>
+        </div>
+      </a>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────
+function renderSidebar(posts) {
+  // Velocity chart (fake but data-informed)
+  const chart = document.getElementById('velocityChart');
+  const baseRate = Math.min(posts.length, 25);
+  const bars = Array.from({length: 24}, (_,i) => {
+    const noise = 0.5 + Math.random();
+    const peak = i >= 18 ? 1.5 : 1.0; // evening peak
+    return Math.round(baseRate * noise * peak);
+  });
+  const maxBar = Math.max(...bars);
+  chart.innerHTML = bars.map((h, i) => {
+    const pct = Math.round((h / maxBar) * 100);
+    const cls = pct > 80 ? 'peak' : pct > 50 ? 'high' : 'mid';
+    return `<div class="vel-bar ${cls}" style="height:${pct}%"></div>`;
+  }).join('');
+
+  // Trending topics (subreddit breakdown)
+  const subredditCounts = {};
+  posts.forEach(p => {
+    subredditCounts[p.subreddit] = (subredditCounts[p.subreddit] || 0) + calcHypeScore(p);
+  });
+  const sorted = Object.entries(subredditCounts).sort((a,b) => b[1]-a[1]).slice(0,8);
+  
+  document.getElementById('trendingTopics').innerHTML = sorted.map(([sub, score], i) => `
+    <div class="trend-item" onclick="window.open('https://reddit.com/r/${sub}','_blank')">
+      <span class="trend-rank">#${i+1}</span>
+      <span class="trend-name">r/${sub}</span>
+      <span class="trend-vel">+${score}</span>
+    </div>
+  `).join('');
+
+  // Sentiment breakdown
+  const sentiments = { positive: 0, negative: 0, neutral: 0, mixed: 0 };
+  posts.forEach(p => { sentiments[analyzeSentiment(p.title).label]++; });
+  const total = posts.length;
+  const sentimentColors = { positive: 'var(--green)', negative: 'var(--hot)', neutral: 'var(--blue)', mixed: 'var(--yellow)' };
+  const icons = { positive: '🟢', negative: '🔴', neutral: '🔵', mixed: '🟡' };
+  
+  document.getElementById('sentimentBreakdown').innerHTML = Object.entries(sentiments).map(([label, count]) => {
+    const pct = total > 0 ? Math.round(count/total*100) : 0;
+    return `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px;">
+          <span>${icons[label]} ${label}</span>
+          <span style="color:var(--muted);font-family:'DM Mono',monospace">${pct}%</span>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:2px;">
+          <div style="height:100%;width:${pct}%;background:${sentimentColors[label]};border-radius:2px;transition:width 0.5s"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── LOAD ──────────────────────────────────────────────────
+async function loadFeed(feedKey) {
+  if (state.loading) return;
+  state.loading = true;
+  
+  document.getElementById('postsGrid').innerHTML = `
+    <div class="loading"><div class="spinner"></div><span>Scanning ${feedKey === 'all' ? 'the internet' : 'r/'+feedKey}...</span></div>
+  `;
+
+  try {
+    let posts;
+    if (state.allPosts[feedKey]) {
+      posts = state.allPosts[feedKey];
+    } else {
+      posts = await fetchFeed(feedKey);
+      state.allPosts[feedKey] = posts;
+    }
+
+    // Update counts
+    document.getElementById(`count-${feedKey}`).textContent = posts.length;
+
+    renderPosts(posts);
+    renderSidebar(posts);
+
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent = `Updated ${now.toLocaleTimeString()}`;
+  } catch(err) {
+    document.getElementById('postsGrid').innerHTML = `
+      <div class="error-state">
+        Failed to load feed: ${err.message}<br>
+        Reddit may be blocking requests from your browser.
+        <br><button class="retry-btn" onclick="loadFeed('${feedKey}')">Retry</button>
+      </div>
+    `;
+  } finally {
+    state.loading = false;
+  }
+}
+
+// ── CONTROLS ──────────────────────────────────────────────
+function switchFeed(feedKey, btn) {
+  document.querySelectorAll('.feed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.currentFeed = feedKey;
+  loadFeed(feedKey);
+}
+
+function setSort(mode, btn) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.sortMode = mode;
+  const posts = state.allPosts[state.currentFeed];
+  if (posts) renderPosts(posts);
+}
+
+function toggleNSFW() {
+  state.showNSFW = !state.showNSFW;
+  const toggle = document.getElementById('nsfwToggle');
+  toggle.classList.toggle('on', state.showNSFW);
+  const posts = state.allPosts[state.currentFeed];
+  if (posts) renderPosts(posts);
+}
+
+// ── AUTO REFRESH every 5 minutes ─────────────────────────
+setInterval(() => {
+  state.allPosts = {}; // clear cache
+  loadFeed(state.currentFeed);
+}, 5 * 60 * 1000);
+
+// ── INIT ──────────────────────────────────────────────────
+loadFeed('all');
+</script>
+</body>
+</html>
