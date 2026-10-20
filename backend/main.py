@@ -5,25 +5,27 @@ Lightweight Flask API that:
 1. Serves the existing frontend
 2. Proxies Reddit feeds (avoids CORS issues)
 3. Adds server-side hype scoring + simple caching
-4. Exposes clean JSON endpoints for future clients
+4. Exposes clean JSON endpoints
 """
 
 from __future__ import annotations
 
+import os
 import time
-from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
 import requests
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder="../", static_url_path="")
+# Resolve project root (one level up from this file)
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+app = Flask(__name__, static_folder=ROOT, static_url_path="")
 CORS(app)
 
-# --------------- Config ---------------
 REDDIT_USER_AGENT = "PulseHype/1.0 (by /u/Gitcoder12)"
-CACHE_TTL = 45  # seconds
+CACHE_TTL = 45
 FEEDS = {
     "all": ["all"],
     "technology": ["technology", "programming"],
@@ -34,7 +36,6 @@ FEEDS = {
     "funny": ["funny", "memes"],
 }
 
-# Simple in-memory cache: {key: (timestamp, data)}
 _cache: Dict[str, tuple] = {}
 
 
@@ -50,7 +51,6 @@ def _set_cache(key: str, data: Any) -> None:
     _cache[key] = (time.time(), data)
 
 
-# --------------- Scoring ---------------
 POSITIVE = {
     "amazing", "incredible", "love", "great", "awesome", "best", "happy",
     "wonderful", "fantastic", "excellent", "brilliant", "perfect", "success",
@@ -74,7 +74,6 @@ def sentiment(title: str) -> Dict[str, Any]:
     pos = sum(1 for w in POSITIVE if w in lower)
     neg = sum(1 for w in NEGATIVE if w in lower)
     hype = sum(1 for w in HYPE if w in lower)
-
     if pos > neg:
         return {"label": "positive", "icon": "🟢", "score": pos}
     if neg > pos:
@@ -85,35 +84,29 @@ def sentiment(title: str) -> Dict[str, Any]:
 
 
 def hype_score(post: Dict) -> int:
-    """Engagement velocity + controversy boost → 0-99."""
     ups = post.get("ups", 0) or 0
     comments = post.get("num_comments", 0) or 0
     ratio = post.get("upvote_ratio", 0.5) or 0.5
     created = post.get("created_utc", time.time())
     hour_age = max(1.0, (time.time() - created) / 3600.0)
-
     velocity = (ups + comments * 3) / ((hour_age + 2) ** 1.5)
     controversy = 1.4 if ratio < 0.6 else 1.0
-    raw = velocity * controversy
-    return min(99, round(raw / 10))
+    return min(99, round(velocity * controversy / 10))
 
 
-# --------------- Reddit fetch ---------------
 def fetch_subreddit(sub: str, limit: int = 25) -> List[Dict]:
     url = f"https://www.reddit.com/r/{sub}/hot.json?limit={limit}"
     headers = {"User-Agent": REDDIT_USER_AGENT}
     try:
         r = requests.get(url, headers=headers, timeout=8)
         r.raise_for_status()
-        children = r.json()["data"]["children"]
-        return [c["data"] for c in children]
+        return [c["data"] for c in r.json()["data"]["children"]]
     except Exception as e:
         app.logger.warning(f"Failed to fetch r/{sub}: {e}")
         return []
 
 
 def enrich(post: Dict) -> Dict:
-    """Add hype score + sentiment to a Reddit post."""
     return {
         "id": post.get("id"),
         "title": post.get("title"),
@@ -132,10 +125,9 @@ def enrich(post: Dict) -> Dict:
     }
 
 
-# --------------- Routes ---------------
 @app.route("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    return send_from_directory(ROOT, "index.html")
 
 
 @app.route("/api/health")
@@ -162,7 +154,6 @@ def get_feed(feed_name: str):
     for sub in FEEDS[feed_name]:
         all_posts.extend(fetch_subreddit(sub))
 
-    # Deduplicate by id
     seen = set()
     unique = []
     for p in all_posts:
@@ -171,16 +162,13 @@ def get_feed(feed_name: str):
             seen.add(pid)
             unique.append(enrich(p))
 
-    # Sort by hype descending
     unique.sort(key=lambda x: x["hype"], reverse=True)
-
     _set_cache(cache_key, unique)
     return jsonify({"feed": feed_name, "cached": False, "posts": unique})
 
 
 @app.route("/api/trending")
 def trending():
-    """Return top 10 highest-hype posts across all feeds."""
     cache_key = "trending"
     cached = _get_cached(cache_key)
     if cached is not None:
@@ -206,4 +194,5 @@ def trending():
 
 
 if __name__ == "__main__":
+    print("PulseHype running → http://localhost:5000")
     app.run(host="0.0.0.0", port=5000, debug=True)
