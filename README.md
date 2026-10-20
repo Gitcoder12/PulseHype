@@ -3,6 +3,17 @@
 **Real-time viral content radar.**  
 Cuts through the noise and shows only what’s actually blowing up right now — ranked by engagement velocity + sentiment intensity.
 
+## Live Demo (local)
+
+```bash
+git clone https://github.com/Gitcoder12/PulseHype.git
+cd PulseHype
+pip install -r requirements.txt
+python backend/main.py
+```
+
+Then open → **http://localhost:5000**
+
 ## What it does
 
 - Pulls live hot posts from multiple Reddit communities
@@ -12,17 +23,6 @@ Cuts through the noise and shows only what’s actually blowing up right now —
   - Controversy boost (low upvote ratio)
 - Runs lightweight keyword sentiment analysis
 - Clean, dark, real-time dashboard
-
-## Live Demo (local)
-
-```bash
-git clone https://github.com/Gitcoder12/PulseHype.git
-cd PulseHype
-pip install -r requirements.txt
-python backend/app.py
-```
-
-Then open → **http://localhost:5000**
 
 ## API Endpoints
 
@@ -44,16 +44,16 @@ curl http://localhost:5000/api/trending
 
 ```
 PulseHype/
-├── index.html          # Beautiful single-page frontend (kept intact)
+├── index.html          # Beautiful single-page frontend
 ├── backend/
-│   └── app.py          # Flask API + scoring + caching
+│   └── main.py         # Flask API + scoring + caching
 ├── requirements.txt
 └── README.md
 ```
 
 ### Why this design?
 
-- Frontend stays pure HTML/JS → zero build step, works offline once loaded
+- Frontend stays pure HTML/JS → zero build step
 - Backend only proxies Reddit + adds scoring → solves CORS and adds real value
 - 45-second in-memory cache → polite to Reddit + fast responses
 - Hype formula is transparent and easy to tune
@@ -70,17 +70,10 @@ hype = min(99, round(velocity × controversy / 10))
 
 | Layer | Tech |
 |-------|------|
-| Frontend | Vanilla HTML/CSS/JS (Space Grotesk + DM Mono) |
+| Frontend | Vanilla HTML/CSS/JS |
 | Backend | Flask + flask-cors + requests |
 | Data source | Reddit public JSON API |
 | Caching | Simple in-memory TTL cache |
-
-## Future ideas
-
-- Add Hacker News / X / YouTube sources
-- Real transformer-based sentiment
-- User accounts + saved trends
-- WebSocket live push
 
 ## License
 
