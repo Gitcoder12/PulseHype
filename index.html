@@ -201,7 +201,7 @@ function renderPosts(posts){
       <div class="post-title">${escapeHtml(p.title||"")}</div>
       <div class="post-stats">
         <div class="stat ${h>=60?"hot":""}">▲ ${formatNum(p.ups)}</div>
-        <div class="stat">💬 ${formatNum(p.num_comments)}</div>
+        <div class="stat"> ${formatNum(p.num_comments)}</div>
         <div class="sentiment ${s.label}">${s.icon||"●"} ${s.label}</div>
         <div class="hype-wrap">
           <canvas class="spark" id="sp${idx}"></canvas>
