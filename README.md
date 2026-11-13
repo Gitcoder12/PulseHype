@@ -1,75 +1,97 @@
-# PulseHype
+# PulseHype 🔥
 
-**A real-time feed dashboard that ranks stories using a lightweight engagement and sentiment heuristic.**
+**Real-time viral content radar.**  
+Cuts through the noise and shows only what’s actually blowing up right now — ranked by engagement velocity + sentiment intensity.
 
-[![License](https://img.shields.io/badge/license-see%20LICENSE-lightgrey)](LICENSE)
-
-PulseHype collects items from Hacker News and configured RSS feeds, enriches them with simple keyword-based sentiment signals, and sorts them by a project-defined Hype score.
-
-## Features
-
-- Hacker News feeds for technology, science, and programming topics.
-- RSS-based feeds for selected world-news, gaming, film, and entertainment sources.
-- Heuristic engagement-velocity ranking.
-- Keyword-based positive, negative, and hype signals.
-- Short-lived in-memory cache to reduce repeated feed requests.
-- Flask API with a static browser frontend.
-
-## Quick Start
+## Live Demo (local)
 
 ```bash
 git clone https://github.com/Gitcoder12/PulseHype.git
 cd PulseHype
-
-python -m venv .venv
-# Windows: .venv\\Scripts\\activate
-# macOS / Linux: source .venv/bin/activate
-
 pip install -r requirements.txt
 python backend/main.py
 ```
 
-Open `http://localhost:5000`.
+Then open → **http://localhost:5000**
+
+## What it does
+
+- Pulls live hot posts from multiple Reddit communities
+- Scores every post with a **Hype Score** (0-99) based on:
+  - Upvotes + comment velocity
+  - Age of the post (newer = higher potential)
+  - Controversy boost (low upvote ratio)
+- Runs lightweight keyword sentiment analysis
+- Clean, dark, real-time dashboard
+
+## API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /` | Frontend dashboard |
+| `GET /api/health` | Health check |
+| `GET /api/feeds` | List available feeds |
+| `GET /api/feed/<name>` | Posts for a feed (all, technology, gaming…) |
+| `GET /api/trending` | Top 15 highest-hype posts across all feeds |
+
+Example:
+```bash
+curl http://localhost:5000/api/feed/technology
+curl http://localhost:5000/api/trending
+```
+
+## Architecture
+
+```
+PulseHype/
+├── index.html          # Beautiful single-page frontend
+├── backend/
+│   └── main.py         # Flask API + scoring + caching
+├── requirements.txt
+└── README.md
+```
+
+### Why this design?
+
+- Frontend stays pure HTML/JS → zero build step
+- Backend only proxies Reddit + adds scoring → solves CORS and adds real value
+- 45-second in-memory cache → polite to Reddit + fast responses
+- Hype formula is transparent and easy to tune
+
+## Hype Score formula (interview-ready)
+
+```
+velocity = (ups + comments × 3) / (age_hours + 2)^1.5
+controversy = 1.4 if upvote_ratio < 0.6 else 1.0
+hype = min(99, round(velocity × controversy / 10))
+```
 
 ## Tech Stack
 
-Python · Flask · Flask-CORS · Requests · Feedparser · HTML · CSS · JavaScript
-
-## Project Structure
-
-```text
-PulseHype/
-├── backend/     # Flask routes, feed retrieval, scoring, and caching
-├── frontend/    # Browser interface components and assets
-├── index.html   # Root browser entry page
-└── requirements.txt
-```
-
-## Scope and Limitations
-
-Hype and sentiment scores are transparent heuristics, not validated measures of virality, public opinion, or importance. RSS feeds and third-party services can change, rate-limit, or become unavailable. The current implementation does not use Reddit as a source.
+| Layer | Tech |
+|-------|------|
+| Frontend | Vanilla HTML/CSS/JS |
+| Backend | Flask + flask-cors + requests |
+| Data source | Reddit public JSON API |
+| Caching | Simple in-memory TTL cache |
 
 ## License
 
-See [LICENSE](LICENSE).
+MIT
 
 ---
 
-## Project handbook
+**Author**: Dharavath Satvik ([@Gitcoder12](https://github.com/Gitcoder12))
 
-- [Activity log](ACTIVITY_LOG.md) · [Feature upgrade plan](FEATURE_UPGRADE_PLAN.md)
-- [Company and team fit](COMPANY_FIT.md) · [README explanation draft](README_ADDENDUM_DRAFT.md)
-- [README quality checklist](README_QUALITY_CHECKLIST.md)
-- [Contributing](CONTRIBUTING.md) · [Agent instructions](AGENTS.md) · [Agent skills](SKILLS.md)
 
-## Understanding the project
+---
 
-### In plain language
+## AI-maintained project notes (secondary — 2026-11-13)
 
-A dashboard that collects stories from Hacker News and selected RSS feeds, then sorts them using simple engagement and keyword signals.
+This section supplements the maintainer-authored README above. The original text has been restored verbatim from Git-history baseline `77f71ce54a30eb6cf03a1e16c2068652a959b88d`; this addendum does not replace or certify the original claims.
 
-### Technical and research view
-
-The app reads story items from configured sources, normalises their basic information and sorts them using simple project-defined signals. The ranking is a browsing aid, not a factual or editorial verdict.
-
-For future work, see [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md), [COMPANY_FIT.md](COMPANY_FIT.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+- The current source tree, runtime data and tests are the implementation source of truth. Roadmap items, draft PRs and AI-generated descriptions are not shipped features by themselves.
+- Preserve real and maintainer-provided data. Never silently substitute generated or placeholder data. Clearly label and isolate synthetic fixtures.
+- Mark unverified sources, identifiers, metrics, benchmark results and external claims as unknown/unverified rather than guessing.
+- Verify setup, execution, tests and public claims against the exact current commit before using this repository in a job, research or academic application.
+- See [MODEL_AUDIT_ROUTER.md](MODEL_AUDIT_ROUTER.md) for independent model review instructions and the merge gate.
