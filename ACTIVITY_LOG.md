@@ -17,3 +17,12 @@ Flask backend and static browser frontend. Sources include Hacker News and confi
 | YYYY-MM-DD | name | link | paths | exact command and source fixture | pass / fail / not run | evidence and caveats |
 
 For feed or ranking changes, record source timestamp, retrieval timestamp, cache state, fixture and ranking configuration. Do not equate heuristic hype with importance or truth.
+
+## Portfolio documentation rollout — 2026-11-13
+
+- Documentation PR: https://github.com/Gitcoder12/PulseHype/pull/3
+- Added project-specific feature roadmap, company-fit mapping, two-level README explanation and quality checklist.
+- Added or preserved contribution instructions and scoped agent/skills guidance as shown in the PR diff.
+- README now includes a plain-language overview and a technical/research view without replacing its existing setup and feature information.
+- Validation: documentation/source review only. This PR does not claim an application runtime test or deployment.
+- Status: draft PR, not merged.
