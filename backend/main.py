@@ -79,12 +79,12 @@ def sentiment(title: str) -> Dict[str, Any]:
     neg = sum(1 for w in NEGATIVE if w in lower)
     hype = sum(1 for w in HYPE if w in lower)
     if pos > neg:
-        return {"label": "positive", "icon": "🟢", "score": pos}
+        return {"label": "positive", "icon": "", "score": pos}
     if neg > pos:
-        return {"label": "negative", "icon": "🔴", "score": neg}
+        return {"label": "negative", "icon": "", "score": neg}
     if hype > 0:
-        return {"label": "mixed", "icon": "🟡", "score": hype}
-    return {"label": "neutral", "icon": "🔵", "score": 0}
+        return {"label": "mixed", "icon": "", "score": hype}
+    return {"label": "neutral", "icon": "", "score": 0}
 
 
 def hype_score(post: Dict) -> int:
