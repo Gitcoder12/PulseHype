@@ -95,3 +95,22 @@ This section supplements the maintainer-authored README above. The original text
 - Mark unverified sources, identifiers, metrics, benchmark results and external claims as unknown/unverified rather than guessing.
 - Verify setup, execution, tests and public claims against the exact current commit before using this repository in a job, research or academic application.
 - See [MODEL_AUDIT_ROUTER.md](MODEL_AUDIT_ROUTER.md) for independent model review instructions and the merge gate.
+
+---
+
+## Engineering Audit & Handover — 2026-11-17
+
+**Reviewed commit:** `9f17f2d2a0ce8a3f698343b57271593f4b86c509` (`main`). Static inspection covered `backend/main.py` and the current README.
+
+### Confirmed findings
+- The README describes Reddit as the primary live source, but the inspected backend identifies its current sources as Hacker News and RSS; the health endpoint returns `hackernews` and `rss`.
+- For RSS records, `fetch_rss()` fabricates `ups` and `num_comments` from Python's process-randomized `hash(title)`. Those values are not actual engagement counts, yet they feed the displayed hype score. Do not present RSS hype scores as measured engagement velocity.
+- Sentiment is a keyword-substring heuristic over titles, not a trained sentiment model.
+- The current implementation uses a 60-second in-memory cache. Cache state is process-local and is lost on restart; multiple workers do not share it.
+
+### Next actions
+1. Correct the README/source labels so data sources and engagement metrics match the actual implementation.
+2. For RSS, separate measured fields from synthetic ranking features; label estimates explicitly and never display synthetic values as votes/comments.
+3. Add source timestamps, per-source error visibility, tests for feed parsing, and deterministic scoring tests.
+
+**Verification status:** static source inspection only; live feed freshness, UI integration, and runtime behavior remain unverified.
