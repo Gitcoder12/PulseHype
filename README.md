@@ -114,3 +114,10 @@ This section supplements the maintainer-authored README above. The original text
 3. Add source timestamps, per-source error visibility, tests for feed parsing, and deterministic scoring tests.
 
 **Verification status:** static source inspection only; live feed freshness, UI integration, and runtime behavior remain unverified.
+
+---
+
+## Examples Used
+- Ranking fast-rising technology discussions
+- Comparing engagement velocity across posts
+- Detecting sentiment shifts in a trending topic
