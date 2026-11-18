@@ -114,3 +114,26 @@ This section supplements the maintainer-authored README above. The original text
 3. Add source timestamps, per-source error visibility, tests for feed parsing, and deterministic scoring tests.
 
 **Verification status:** static source inspection only; live feed freshness, UI integration, and runtime behavior remain unverified.
+
+
+---
+
+## Branch Activity & Development History
+
+**Audit date:** 2026-11-18 · **Comparison base:** `main`
+
+| Branch | Difference from `main` | Observed work / changed paths |
+|---|---:|---|
+| `chore/remove-emoji-glyphs-2026-11-13` | 6 ahead / 3 behind | Glyph cleanup in backend and main HTML |
+| `docs/portfolio-operating-kit-2026-11-13` | 4 / 3 | Activity log, agent guidance, company-fit notes, feature plan, README support docs and skills; README has removals as well as additions |
+| `docs/project-status-2026-11-16` | Comparison unavailable | GitHub returned 404 for the comparison; recheck branch existence |
+| `docs/status-inventory-2026-11-16-v1` | 1 / 1 | Project status inventory: `PROJECT_STATUS.md` |
+| `v4-masterpiece` | 1 / 4 | UI revision in `index.html` |
+
+### Open pull requests observed during this audit
+
+- [PR #4 — project status snapshot](https://github.com/Gitcoder12/PulseHype/pull/4)
+- [PR #3 — project handbook and feed evaluation roadmap](https://github.com/Gitcoder12/PulseHype/pull/3)
+- [PR #1 — remove emoji glyphs](https://github.com/Gitcoder12/PulseHype/pull/1)
+
+**Verification boundary:** Branch metadata and changed paths only. Check the UI manually and review PR head/base and CI before merging. No branches have been merged or deleted by this documentation update.
