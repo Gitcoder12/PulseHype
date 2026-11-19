@@ -121,3 +121,27 @@ This section supplements the maintainer-authored README above. The original text
 - Ranking fast-rising technology discussions
 - Comparing engagement velocity across posts
 - Detecting sentiment shifts in a trending topic
+
+
+---
+
+## Comparison with Existing Open-Source Projects
+
+PulseHype is documented as a feed-ranking dashboard that combines source activity, recency and lightweight sentiment signals to surface fast-rising discussions. These projects provide adjacent social-listening and trend-monitoring references.
+
+| Project / resource | Established focus | Relationship to PulseHype |
+|---|---|---|
+| [SocialMediaTracker Streamlit WebApp](https://github.com/lokesh-76/SocialMediaTracker-Streamlit-WebApp) | Social-media monitoring and analytics dashboard | A general social-media tracking reference; PulseHype's documented distinction is a feed-oriented ranking based on recency/engagement velocity rather than broad account analytics. |
+| [Zeitbot](https://github.com/ShonMG/zeitbot) | Trend-oriented monitoring and signal aggregation | An adjacent trend-monitoring project; compare actual source coverage and ranking logic before asserting feature parity. |
+| [Reddit API](https://www.reddit.com/dev/api/) | Platform endpoints and public listing data | PulseHype depends on upstream source data; Reddit's API is an input interface, not a competing dashboard product. |
+
+### Where PulseHype is different
+- **Velocity-first ranking:** the README describes a custom Hype Score that combines engagement signals with post age and a controversy adjustment.
+- **Feed aggregation:** the intended dashboard presents multiple topic feeds through one interface.
+- **Transparent formula:** the scoring expression is documented so users can inspect and tune its assumptions.
+
+### Where established alternatives are stronger
+Dedicated social-listening platforms may offer broader source coverage, historical analytics, account-level insights and more robust sentiment models. PulseHype's current engineering audit found a mismatch between README claims and backend sources, and identified synthetic RSS engagement fields. It must not display fabricated votes/comments as measured engagement or describe keyword matching as trained sentiment analysis.
+
+### Evidence and limitations
+Show the source and retrieval timestamp for every item, separate measured fields from estimates, and expose partial-feed failures. Validate ranking with a labelled dataset and user study before claiming that the score identifies virality. This is a documented-scope comparison, not a ranking-quality benchmark.
