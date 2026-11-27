@@ -121,3 +121,9 @@ This section supplements the maintainer-authored README above. The original text
 - Ranking fast-rising technology discussions
 - Comparing engagement velocity across posts
 - Detecting sentiment shifts in a trending topic
+
+---
+
+## Repository navigation
+
+[Alphabetical file index](FILE_INDEX.md)
