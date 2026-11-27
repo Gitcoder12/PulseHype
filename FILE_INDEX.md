@@ -1,0 +1,36 @@
+# Alphabetical File Index
+
+> Generated from the `main` branch. Paths are listed alphabetically; this index does not imply that source modules should be renamed.
+
+**Tracked files:** 30
+
+- [`.env.example`](./.env.example)
+- [`.gitignore`](./.gitignore)
+- [`backend/app.py/.gitkeep`](./backend/app.py/.gitkeep)
+- [`backend/config.py`](./backend/config.py)
+- [`backend/main.py`](./backend/main.py)
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- [`frontend/assets/css/components.css`](./frontend/assets/css/components.css)
+- [`frontend/assets/css/dashboard.css`](./frontend/assets/css/dashboard.css)
+- [`frontend/assets/css/main.css`](./frontend/assets/css/main.css)
+- [`frontend/assets/images/.gitkeep`](./frontend/assets/images/.gitkeep)
+- [`frontend/assets/js/api.js`](./frontend/assets/js/api.js)
+- [`frontend/assets/js/app.js`](./frontend/assets/js/app.js)
+- [`frontend/assets/js/routers.js`](./frontend/assets/js/routers.js)
+- [`frontend/assets/js/util.js`](./frontend/assets/js/util.js)
+- [`frontend/components/charts/.gitkeep`](./frontend/components/charts/.gitkeep)
+- [`frontend/components/filters/.gitkeep`](./frontend/components/filters/.gitkeep)
+- [`frontend/components/leaderboard/.gitkeep`](./frontend/components/leaderboard/.gitkeep)
+- [`frontend/components/navbar/.gitkeep`](./frontend/components/navbar/.gitkeep)
+- [`frontend/components/trend-card/.gitkeep`](./frontend/components/trend-card/.gitkeep)
+- [`frontend/data/.gitkeep`](./frontend/data/.gitkeep)
+- [`frontend/index.html`](./frontend/index.html)
+- [`frontend/pages/categories/.gitkeep`](./frontend/pages/categories/.gitkeep)
+- [`frontend/pages/dashboard/.gitkeep`](./frontend/pages/dashboard/.gitkeep)
+- [`frontend/pages/settings/.gitkeep`](./frontend/pages/settings/.gitkeep)
+- [`frontend/pages/trends/.gitkeep`](./frontend/pages/trends/.gitkeep)
+- [`index.html`](./index.html)
+- [`LICENSE`](./LICENSE)
+- [`MODEL_AUDIT_ROUTER.md`](./MODEL_AUDIT_ROUTER.md)
+- [`README.md`](./README.md)
+- [`requirements.txt`](./requirements.txt)
